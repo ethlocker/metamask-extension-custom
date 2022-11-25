@@ -242,8 +242,20 @@ export const getRpcUrl = ({
 }: {
   network: NetworkType;
   excludeProjectId?: boolean;
-}) =>
-  `https://${network}.infura.io/v3/${excludeProjectId ? '' : infuraProjectId}`;
+}) => {
+  switch(network) {
+    case NETWORK_TYPES.MAINNET:
+        return "https://eth-rpc.gateway.pokt.network/";
+        
+    
+    case NETWORK_TYPES.GOERLI:
+        return "https://eth-goerli-rpc.gateway.pokt.network/";
+        
+    case NETWORK_TYPES.SEPOLIA:
+        return "https://rpc.sepolia.dev";
+  }
+  //`https://${network}.infura.io/v3/${excludeProjectId ? '' : infuraProjectId}`;
+}
 
 export const MAINNET_RPC_URL = getRpcUrl({
   network: NETWORK_TYPES.MAINNET,
@@ -568,8 +580,8 @@ export const CHAIN_ID_TO_GAS_LIMIT_BUFFER_MAP = {
  * do not support.
  */
 export const UNSUPPORTED_RPC_METHODS = new Set([
-  // This is implemented later in our middleware stack – specifically, in
-  // eth-json-rpc-middleware – but our UI does not support it.
+  // This is implemented later in our middleware stack â€“ specifically, in
+  // eth-json-rpc-middleware â€“ but our UI does not support it.
   'eth_signTransaction' as const,
 ]);
 
@@ -879,7 +891,7 @@ export const FEATURED_RPCS: RPCDefinition[] = [
   {
     chainId: CHAIN_IDS.ARBITRUM,
     nickname: ARBITRUM_DISPLAY_NAME,
-    rpcUrl: `https://arbitrum-mainnet.infura.io/v3/${infuraProjectId}`,
+    rpcUrl: "https://arb1.arbitrum.io/rpc", //`https://arbitrum-mainnet.infura.io/v3/${infuraProjectId}`,
     ticker: CURRENCY_SYMBOLS.ARBITRUM,
     rpcPrefs: {
       blockExplorerUrl: 'https://explorer.arbitrum.io',
@@ -889,7 +901,7 @@ export const FEATURED_RPCS: RPCDefinition[] = [
   {
     chainId: CHAIN_IDS.AURORA,
     nickname: AURORA_DISPLAY_NAME,
-    rpcUrl: `https://aurora-mainnet.infura.io/v3/${infuraProjectId}`,
+    rpcUrl: "https://mainnet.aurora.dev", //`https://aurora-mainnet.infura.io/v3/${infuraProjectId}`,
     ticker: CURRENCY_SYMBOLS.AURORA,
     rpcPrefs: {
       blockExplorerUrl: 'https://aurorascan.dev/',
@@ -899,7 +911,7 @@ export const FEATURED_RPCS: RPCDefinition[] = [
   {
     chainId: CHAIN_IDS.AVALANCHE,
     nickname: AVALANCHE_DISPLAY_NAME,
-    rpcUrl: `https://avalanche-mainnet.infura.io/v3/${infuraProjectId}`,
+    rpcUrl: "https://avax-rpc.gateway.pokt.network/", //`https://avalanche-mainnet.infura.io/v3/${infuraProjectId}`,
     ticker: CURRENCY_SYMBOLS.AVALANCHE,
     rpcPrefs: {
       blockExplorerUrl: 'https://snowtrace.io/',
@@ -909,7 +921,7 @@ export const FEATURED_RPCS: RPCDefinition[] = [
   {
     chainId: CHAIN_IDS.BSC,
     nickname: BNB_DISPLAY_NAME,
-    rpcUrl: 'https://bsc-dataseed.binance.org/',
+    rpcUrl: "https://bsc-rpc.gateway.pokt.network/", //'https://bsc-dataseed.binance.org/',
     ticker: CURRENCY_SYMBOLS.BNB,
     rpcPrefs: {
       blockExplorerUrl: 'https://bscscan.com/',
@@ -919,7 +931,7 @@ export const FEATURED_RPCS: RPCDefinition[] = [
   {
     chainId: CHAIN_IDS.FANTOM,
     nickname: FANTOM_DISPLAY_NAME,
-    rpcUrl: 'https://rpc.ftm.tools/',
+    rpcUrl: "https://fantom-rpc.gateway.pokt.network/", //'https://rpc.ftm.tools/',
     ticker: CURRENCY_SYMBOLS.FANTOM,
     rpcPrefs: {
       blockExplorerUrl: 'https://ftmscan.com/',
@@ -929,7 +941,7 @@ export const FEATURED_RPCS: RPCDefinition[] = [
   {
     chainId: CHAIN_IDS.HARMONY,
     nickname: HARMONY_DISPLAY_NAME,
-    rpcUrl: 'https://api.harmony.one/',
+    rpcUrl: "https://harmony-0-rpc.gateway.pokt.network/", //'https://api.harmony.one/',
     ticker: CURRENCY_SYMBOLS.HARMONY,
     rpcPrefs: {
       blockExplorerUrl: 'https://explorer.harmony.one/',
@@ -939,7 +951,7 @@ export const FEATURED_RPCS: RPCDefinition[] = [
   {
     chainId: CHAIN_IDS.OPTIMISM,
     nickname: OPTIMISM_DISPLAY_NAME,
-    rpcUrl: `https://optimism-mainnet.infura.io/v3/${infuraProjectId}`,
+    rpcUrl: "https://optimism-rpc.gateway.pokt.network/", //`https://optimism-mainnet.infura.io/v3/${infuraProjectId}`,
     ticker: CURRENCY_SYMBOLS.ETH,
     rpcPrefs: {
       blockExplorerUrl: 'https://optimistic.etherscan.io/',
@@ -949,7 +961,7 @@ export const FEATURED_RPCS: RPCDefinition[] = [
   {
     chainId: CHAIN_IDS.PALM,
     nickname: PALM_DISPLAY_NAME,
-    rpcUrl: `https://palm-mainnet.infura.io/v3/${infuraProjectId}`,
+    rpcUrl: "https://palm-mainnet.public.blastapi.io", //`https://palm-mainnet.infura.io/v3/${infuraProjectId}`,
     ticker: CURRENCY_SYMBOLS.PALM,
     rpcPrefs: {
       blockExplorerUrl: 'https://explorer.palm.io/',
@@ -959,7 +971,7 @@ export const FEATURED_RPCS: RPCDefinition[] = [
   {
     chainId: CHAIN_IDS.POLYGON,
     nickname: `${POLYGON_DISPLAY_NAME} ${capitalize(NETWORK_TYPES.MAINNET)}`,
-    rpcUrl: `https://polygon-mainnet.infura.io/v3/${infuraProjectId}`,
+    rpcUrl: "https://poly-rpc.gateway.pokt.network/", //`https://polygon-mainnet.infura.io/v3/${infuraProjectId}`,
     ticker: CURRENCY_SYMBOLS.MATIC,
     rpcPrefs: {
       blockExplorerUrl: 'https://polygonscan.com/',
