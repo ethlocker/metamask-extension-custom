@@ -5,6 +5,7 @@ import { useSelector } from 'react-redux';
 import {
   NETWORK_TYPES,
   BUILT_IN_NETWORKS,
+  CHAIN_IDS,
 } from '../../../../shared/constants/network';
 
 import LoadingIndicator from '../../ui/loading-indicator';
@@ -30,11 +31,23 @@ export default function NetworkDisplay({
   const currentNetwork = useSelector((state) => ({
     nickname: state.metamask.provider.nickname,
     type: state.metamask.provider.type,
+    chainId: state.metamask.provider.chainId,
   }));
+
+  let networkType;
+  if (currentNetwork.chainId === CHAIN_IDS.MAINNET) {
+    networkType = NETWORK_TYPES.MAINNET;
+  } else if (currentNetwork.chainId === CHAIN_IDS.GOERLI) {
+    networkType = NETWORK_TYPES.GOERLI;
+  } else if (currentNetwork.chainId === CHAIN_IDS.SEPOLIA) {
+    networkType = NETWORK_TYPES.SEPOLIA;
+  } else {
+    networkType = NETWORK_TYPES.RPC;
+  }
+
   const t = useI18nContext();
 
-  const { nickname: networkNickname, type: networkType } =
-    targetNetwork ?? currentNetwork;
+  const { nickname: networkNickname } = targetNetwork ?? currentNetwork;
 
   return (
     <Chip
@@ -68,10 +81,7 @@ export default function NetworkDisplay({
           <IconCaretDown size={16} className="network-display__icon" />
         ) : null
       }
-      label={
-        networkType === NETWORK_TYPES.RPC
-          ? networkNickname ?? t('privateNetwork')
-          : t(networkType)
+      label={networkNickname ?? t('privateNetwork')
       }
       className={classnames('network-display', {
         'network-display--disabled': disabled,

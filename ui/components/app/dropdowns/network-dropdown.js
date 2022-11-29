@@ -9,6 +9,7 @@ import { openAlert as displayInvalidCustomNetworkAlert } from '../../../ducks/al
 import {
   LOCALHOST_RPC_URL,
   NETWORK_TYPES,
+  TEST_CHAINS,
 } from '../../../../shared/constants/network';
 import { isPrefixedFormattedHexString } from '../../../../shared/modules/network.utils';
 
@@ -141,11 +142,20 @@ class NetworkDropdown extends Component {
     );
   }
 
-  renderCustomRpcList(rpcListDetail, provider, opts = {}) {
-    const reversedRpcListDetail = rpcListDetail.slice().reverse();
+  renderCustomRpcList(rpcListDetail, provider, shouldShowTestNetworks) {
+    // const reversedRpcListDetail = rpcListDetail.slice().reverse();
 
-    return reversedRpcListDetail.map((entry) => {
-      const { rpcUrl, chainId, ticker = 'ETH', nickname = '' } = entry;
+    return rpcListDetail.filter((entry) => shouldShowTestNetworks ? true : !TEST_CHAINS.includes(entry.chainId)).map((entry) => {
+      const {
+        rpcUrl,
+        chainId,
+        ticker = 'ETH',
+        nickname = '',
+        providerType,
+      } = entry;
+      
+      const isDefaultNetworks =
+        Object.values(NETWORK_TYPES).includes(providerType);
       const isCurrentRpcTarget =
         provider.type === NETWORK_TYPES.RPC && rpcUrl === provider.rpcUrl;
 
@@ -160,11 +170,7 @@ class NetworkDropdown extends Component {
               this.props.displayInvalidCustomNetworkAlert(nickname || rpcUrl);
             }
           }}
-          style={{
-            fontSize: '16px',
-            lineHeight: '20px',
-            padding: '16px',
-          }}
+          style={DROP_DOWN_MENU_ITEM_STYLE}
         >
           {isCurrentRpcTarget ? (
             <IconCheck color="var(--color-success-default)" />
@@ -172,13 +178,13 @@ class NetworkDropdown extends Component {
             <div className="network-check__transparent">✓</div>
           )}
           <ColorIndicator
-            color={opts.isLocalHost ? 'localhost' : COLORS.ICON_MUTED}
+            color={isDefaultNetworks ? providerType : COLORS.ICON_MUTED}
             size={SIZES.LG}
             type={ColorIndicator.TYPES.FILLED}
           />
           <span
             className="network-name-item"
-            data-testid={`${nickname}-network-item`}
+            data-testid={`${providerType ?? nickname}-network-item`}
             style={{
               color: isCurrentRpcTarget
                 ? 'var(--color-text-default)'
@@ -269,12 +275,12 @@ class NetworkDropdown extends Component {
       hideTestNetMessage,
     } = this.props;
     const rpcListDetail = this.props.frequentRpcListDetail;
-    const rpcListDetailWithoutLocalHost = rpcListDetail.filter(
-      (rpc) => rpc.rpcUrl !== LOCALHOST_RPC_URL,
-    );
-    const rpcListDetailForLocalHost = rpcListDetail.filter(
-      (rpc) => rpc.rpcUrl === LOCALHOST_RPC_URL,
-    );
+    // const rpcListDetailWithoutLocalHost = rpcListDetail.filter(
+    //   (rpc) => rpc.rpcUrl !== LOCALHOST_RPC_URL,
+    // );
+    // const rpcListDetailForLocalHost = rpcListDetail.filter(
+    //   (rpc) => rpc.rpcUrl === LOCALHOST_RPC_URL,
+    // );
     const isOpen = this.props.networkDropdownOpen;
     const { t } = this.context;
 
@@ -334,14 +340,15 @@ class NetworkDropdown extends Component {
         </div>
 
         <div className="network-dropdown-list">
-          {this.renderNetworkEntry(NETWORK_TYPES.MAINNET)}
+          {/* {this.renderNetworkEntry(NETWORK_TYPES.MAINNET)} */}
 
           {this.renderCustomRpcList(
-            rpcListDetailWithoutLocalHost,
+            rpcListDetail,
             this.props.provider,
+            shouldShowTestNetworks,
           )}
 
-          {shouldShowTestNetworks && (
+          {/* {shouldShowTestNetworks && (
             <>
               {this.renderNetworkEntry(NETWORK_TYPES.GOERLI)}
               {this.renderNetworkEntry(NETWORK_TYPES.SEPOLIA)}
@@ -351,7 +358,7 @@ class NetworkDropdown extends Component {
                 { isLocalHost: true },
               )}
             </>
-          )}
+          )} */}
         </div>
 
         {this.renderAddCustomButton()}

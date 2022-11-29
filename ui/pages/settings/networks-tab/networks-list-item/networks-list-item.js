@@ -115,15 +115,9 @@ const NetworksListItem = ({
         className={classnames('networks-tab__networks-list-name', {
           'networks-tab__networks-list-name--selected':
             displayNetworkListItemAsSelected,
-          'networks-tab__networks-list-name--disabled':
-            currentProviderType !== NETWORK_TYPES.RPC &&
-            !displayNetworkListItemAsSelected,
         })}
       >
         {label || t(labelKey)}
-        {currentProviderType !== NETWORK_TYPES.RPC && (
-          <LockIcon width="14px" height="17px" fill="var(--color-icon-muted)" />
-        )}
       </div>
     </div>
   );

@@ -26,12 +26,6 @@ import NetworksTabContent from './networks-tab-content';
 import NetworksForm from './networks-form';
 import NetworksFormSubheader from './networks-tab-subheader';
 
-const defaultNetworks = defaultNetworksData.map((network) => ({
-  ...network,
-  viewOnly: true,
-  isATestNetwork: TEST_CHAINS.includes(network.chainId),
-}));
-
 const NetworksTab = ({ addNewNetwork }) => {
   const t = useI18nContext();
   const dispatch = useDispatch();
@@ -51,19 +45,20 @@ const NetworksTab = ({ addNewNetwork }) => {
 
   const frequentRpcNetworkListDetails = frequentRpcListDetail.map((rpc) => {
     return {
-      label: rpc.nickname,
-      iconColor: 'var(--color-icon-alternative)',
+      label: rpc.label,
+      iconColor: rpc.iconColor,
       providerType: NETWORK_TYPES.RPC,
       rpcUrl: rpc.rpcUrl,
       chainId: rpc.chainId,
       ticker: rpc.ticker,
-      blockExplorerUrl: rpc.rpcPrefs?.blockExplorerUrl || '',
+      blockExplorerUrl:
+        rpc.blockExplorerUrl ?? (rpc.rpcPrefs?.blockExplorerUrl || ''),
       isATestNetwork: TEST_CHAINS.includes(rpc.chainId),
     };
   });
 
   const networksToRender = [
-    ...defaultNetworks,
+    // ...defaultNetworks,
     ...frequentRpcNetworkListDetails,
   ];
   let selectedNetwork =
