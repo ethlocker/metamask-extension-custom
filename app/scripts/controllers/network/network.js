@@ -12,22 +12,23 @@ import EthQuery from 'eth-query';
 import {
   INFURA_PROVIDER_TYPES,
   BUILT_IN_NETWORKS,
-  INFURA_BLOCKED_KEY,
+  // INFURA_BLOCKED_KEY,
   TEST_NETWORK_TICKER_MAP,
   CHAIN_IDS,
   NETWORK_TYPES,
+  getRpcUrl,
 } from '../../../../shared/constants/network';
 import {
   isPrefixedFormattedHexString,
   isSafeChainId,
 } from '../../../../shared/modules/network.utils';
-import getFetchWithTimeout from '../../../../shared/modules/fetch-with-timeout';
+// import getFetchWithTimeout from '../../../../shared/modules/fetch-with-timeout';
 import createMetamaskMiddleware from './createMetamaskMiddleware';
-import createInfuraClient from './createInfuraClient';
+// import createInfuraClient from './createInfuraClient';
 import createJsonRpcClient from './createJsonRpcClient';
 
 const env = process.env.METAMASK_ENV;
-const fetchWithTimeout = getFetchWithTimeout();
+// const fetchWithTimeout = getFetchWithTimeout();
 
 let defaultProviderConfigOpts;
 if (process.env.IN_TEST) {
@@ -41,12 +42,15 @@ if (process.env.IN_TEST) {
   defaultProviderConfigOpts = {
     type: NETWORK_TYPES.GOERLI,
     chainId: CHAIN_IDS.GOERLI,
-    ticker: TEST_NETWORK_TICKER_MAP.GOERLI,
+    ticker: TEST_NETWORK_TICKER_MAP[NETWORK_TYPES.GOERLI],
+    rpcUrl: getRpcUrl({ network: NETWORK_TYPES.GOERLI }),
   };
 } else {
   defaultProviderConfigOpts = {
     type: NETWORK_TYPES.MAINNET,
     chainId: CHAIN_IDS.MAINNET,
+    ticker: TEST_NETWORK_TICKER_MAP[NETWORK_TYPES.MAINNET],
+    rpcUrl: getRpcUrl({ network: NETWORK_TYPES.MAINNET }),
   };
 }
 
@@ -240,14 +244,6 @@ export default class NetworkController extends EventEmitter {
     // Ping the RPC endpoint so we can confirm that it works
     const ethQuery = new EthQuery(this._provider);
     const initialNetwork = this.getNetworkState();
-    const { type } = this.getProviderConfig();
-    const isInfura = INFURA_PROVIDER_TYPES.includes(type);
-
-    if (isInfura) {
-      this._checkInfuraAvailability(type);
-    } else {
-      this.emit(NETWORK_EVENTS.INFURA_IS_UNBLOCKED);
-    }
 
     ethQuery.sendAsync({ method: 'net_version' }, (err, networkVersion) => {
       const currentNetwork = this.getNetworkState();
@@ -350,7 +346,7 @@ export default class NetworkController extends EventEmitter {
   //
   // Private
   //
-
+/*
   async _checkInfuraAvailability(network) {
     const rpcUrl = `https://${network}.infura.io/v3/${this._infuraProjectId}`;
 
@@ -389,7 +385,7 @@ export default class NetworkController extends EventEmitter {
       log.warn(`MetaMask - Infura availability check failed`, err);
     }
   }
-
+*/
   _switchNetwork(opts) {
     // Indicate to subscribers that network is about to change
     this.emit(NETWORK_EVENTS.NETWORK_WILL_CHANGE);
@@ -407,7 +403,7 @@ export default class NetworkController extends EventEmitter {
     // infura type-based endpoints
     const isInfura = INFURA_PROVIDER_TYPES.includes(type);
     if (isInfura) {
-      this._configureInfuraProvider(type, this._infuraProjectId);
+      this._configureInfuraProvider(type);
       // url-based rpc endpoints
     } else if (type === NETWORK_TYPES.RPC) {
       this._configureStandardProvider(rpcUrl, chainId);
@@ -418,12 +414,20 @@ export default class NetworkController extends EventEmitter {
     }
   }
 
-  _configureInfuraProvider(type, projectId) {
+  _configureInfuraProvider(type) {
     log.info('NetworkController - configureInfuraProvider', type);
-    const networkClient = createInfuraClient({
-      network: type,
-      projectId,
-    });
+    let chainId, rpcUrl;
+    if (type === NETWORK_TYPES.MAINNET) {
+      chainId = CHAIN_IDS.MAINNET;
+      rpcUrl = getRpcUrl({ network: NETWORK_TYPES.MAINNET });
+    } else if (type === NETWORK_TYPES.GOERLI) {
+      chainId = CHAIN_IDS.GOERLI;
+      rpcUrl = getRpcUrl({ network: NETWORK_TYPES.GOERLI });
+    } else {
+      chainId = CHAIN_IDS.SEPOLIA;
+      rpcUrl = getRpcUrl({ network: NETWORK_TYPES.SEPOLIA });
+    }
+    const networkClient = createJsonRpcClient({ rpcUrl, chainId });
     this._setNetworkClient(networkClient);
   }
 

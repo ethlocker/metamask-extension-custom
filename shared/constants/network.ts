@@ -243,18 +243,16 @@ export const getRpcUrl = ({
   network: NetworkType;
   excludeProjectId?: boolean;
 }) => {
-  switch(network) {
+  switch (network) {
     case NETWORK_TYPES.MAINNET:
-        return "https://eth-rpc.gateway.pokt.network/";
-        
-    
+      return 'https://eth-rpc.gateway.pokt.network/';
     case NETWORK_TYPES.GOERLI:
-        return "https://eth-goerli-rpc.gateway.pokt.network/";
-        
+      return 'https://eth-goerli-rpc.gateway.pokt.network/';
     case NETWORK_TYPES.SEPOLIA:
-        return "https://rpc.sepolia.dev";
+      return 'https://rpc.sepolia.org';
+    default:
+      return 'https://eth-rpc.gateway.pokt.network/';
   }
-  //`https://${network}.infura.io/v3/${excludeProjectId ? '' : infuraProjectId}`;
 }
 
 export const MAINNET_RPC_URL = getRpcUrl({
